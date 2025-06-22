@@ -1,75 +1,74 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   init.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: garside <garside@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/17 17:09:05 by garside           #+#    #+#             */
-/*   Updated: 2025/06/17 18:30:52 by garside          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-int	ft_atoi(const char *str)
+void	init_data(t_data *data, int philo_count)
 {
-	int	res;
+	data->dead = 0;
 
-	res = 0;
-	while (*str >= '0' && *str <= '9')
-		res = res * 10 + (*str++ - '0');
-	return (res);
-}
-
-int	is_number(const char *str)
-{
-	if (!str || *str == '\0')
-		return (0);
-	while (*str)
+	data->fork = malloc(sizeof(pthread_mutex_t) * philo_count);
+	if (!data->fork)
 	{
-		if (*str < '0' || *str > '9')
-			return (0);
-		str++;
+		printf("Malloc fail\n");
+		return ;
 	}
-	return (1);
+	pthread_mutex_init(&data->display_lock, NULL);
+	pthread_mutex_init(&data->dead_lock, NULL);
+	pthread_mutex_init(&data->meal_lock, NULL);
 }
 
-int	is_valid_param(int n)
-{
-	return (n > 0);
-}
-
-int	init_param(t_data *philo, int ac, char **av)
-{
-	philo->nbr_philo = ft_atoi(av[1]);
-	philo->time_to_die = ft_atoi(av[2]);
-	philo->time_to_eat = ft_atoi(av[3]);
-	philo->time_to_sleep = ft_atoi(av[4]);
-	if (ac == 6)
-		philo->each_eat = ft_atoi(av[5]);
-	else
-		philo->each_eat = -1;
-	return (0);
-}
-
-int	init_fork(t_data *data)
+void	init_forks(pthread_mutex_t *forks, int philo_num)
 {
 	int	i;
 
 	i = 0;
-	data->philo->fork = malloc(sizeof(pthread_mutex_t) * data->nbr_philo);
-	if (!data->philo->fork)
-		return (1);
-	while (i < data->nbr_philo)
+	while (i < philo_num)
 	{
-		if (pthread_mutex_init(&data->philo->fork[i], NULL) != 0)
-		{
-			printf("Ereur l'ors de l'initialisation des mutex\n");
-			free(data->philo->fork);
-			return (1);
-		}
+		pthread_mutex_init(&forks[i], NULL);
 		i++;
 	}
-	return (0);
 }
+
+void init_routine(t_philo *philo, char **av)
+{
+	philo->num_of_philos = ft_atoi(av[1]);
+	philo->time_to_die = ft_atoi(av[2]);
+	philo->time_to_eat = ft_atoi(av[3]);
+	philo->time_to_sleep = ft_atoi(av[4]);
+	if (av[5])
+		philo->num_times_to_eat = ft_atoi(av[5]);
+	else
+		philo->num_times_to_eat = -1;
+
+}
+
+void	init_philo(t_data *data, t_philo *philos, char **av, size_t start_time)
+{
+	int	i = 0;
+
+	while (i < ft_atoi(av[1]))
+	{
+		philos[i].id = i + 1;
+		philos[i].eating = 0;
+		philos[i].meals_eaten = 0;
+		init_routine(&philos[i], av);
+
+		philos[i].start_time = start_time;
+		philos[i].write_lock = &data->display_lock;
+		philos[i].dead_lock = &data->dead_lock;
+		philos[i].meal_lock = &data->meal_lock;
+		philos[i].dead = &data->dead;
+		philos[i].l_fork = &data->fork[i];
+		if (i == 0)
+			philos[i].r_fork = &data->fork[philos[i].num_of_philos - 1];
+		else
+			philos[i].r_fork = &data->fork[i - 1];
+
+		pthread_mutex_lock(philos[i].meal_lock);
+		philos[i].last_meal = start_time;
+		pthread_mutex_unlock(philos[i].meal_lock);
+
+		i++;
+	}
+}
+
+
