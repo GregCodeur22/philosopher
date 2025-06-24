@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_monitor.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: garside <garside@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/24 19:46:03 by garside           #+#    #+#             */
+/*   Updated: 2025/06/24 19:46:32 by garside          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../includes/philo.h"
 
@@ -74,9 +85,14 @@ void	*ft_monitor(void *pointer)
 	while (1)
 	{
 		if (check_if_dead(philos))
-			break;
+			break ;
 		if (check_if_all_ate(philos))
-			break;
+		{
+			pthread_mutex_lock(philos[0].dead_lock);
+			*philos->dead = 1;
+			pthread_mutex_unlock(philos[0].dead_lock);
+			break ;
+		}
 	}
 	return (pointer);
 }

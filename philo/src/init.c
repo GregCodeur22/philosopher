@@ -6,7 +6,7 @@
 /*   By: garside <garside@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 18:14:37 by garside           #+#    #+#             */
-/*   Updated: 2025/06/24 13:01:53 by garside          ###   ########.fr       */
+/*   Updated: 2025/06/24 19:48:59 by garside          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,9 @@ void	init_routine(t_philo *philo, char **av)
 void	init_philo(t_data *data, t_philo *philos, char **av,
 		long long start_time)
 {
-	int i = 0;
+	int	i;
 
+	i = 0;
 	while (i < ft_atoi(av[1]))
 	{
 		philos[i].id = i + 1;

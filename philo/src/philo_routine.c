@@ -6,11 +6,21 @@
 /*   By: garside <garside@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 18:15:59 by garside           #+#    #+#             */
-/*   Updated: 2025/06/24 13:05:11 by garside          ###   ########.fr       */
+/*   Updated: 2025/06/24 19:48:04 by garside          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
+
+int	alive_check(t_philo *philo)
+{
+	int	status;
+
+	pthread_mutex_lock(philo->dead_lock);
+	status = !(*philo->dead);
+	pthread_mutex_unlock(philo->dead_lock);
+	return (status);
+}
 
 int	dead_loop(t_philo *philo)
 {
@@ -28,7 +38,7 @@ void	*philo_routine(void *arg)
 	philo = (t_philo *)arg;
 	if (philo->id % 2 != 0)
 		ft_usleep(1);
-	while (1)
+	while (alive_check(philo))
 	{
 		if (*philo->dead)
 			break ;

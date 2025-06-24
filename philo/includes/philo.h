@@ -6,7 +6,7 @@
 /*   By: garside <garside@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 18:22:55 by garside           #+#    #+#             */
-/*   Updated: 2025/06/24 13:04:48 by garside          ###   ########.fr       */
+/*   Updated: 2025/06/24 20:02:22 by garside          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ typedef struct s_philo
 typedef struct s_data
 {
 	int				dead;
+	int				philos_full;
 	pthread_mutex_t	dead_lock;
 	pthread_mutex_t	meal_lock;
 	pthread_mutex_t	display_lock;
@@ -80,5 +81,10 @@ int					dead_loop(t_philo *philo);
 void				think(t_philo *philo);
 void				dream(t_philo *philo);
 void				eat(t_philo *philo);
+int					alive_check(t_philo *philo);
+
+// utils
+int					ft_atoi(const char *str);
+void				free_all(t_data *data, t_philo *philo);
 
 #endif

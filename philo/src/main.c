@@ -6,7 +6,7 @@
 /*   By: garside <garside@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 18:14:25 by garside           #+#    #+#             */
-/*   Updated: 2025/06/23 18:23:27 by garside          ###   ########.fr       */
+/*   Updated: 2025/06/24 20:01:34 by garside          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,30 +22,6 @@ int	ft_usleep(size_t milliseconds)
 	return (0);
 }
 
-int	ft_atoi(const char *str)
-{
-	int	sign;
-	int	res;
-
-	sign = 1;
-	res = 0;
-	while (*str == ' ' || (*str >= 9 && *str <= 13))
-		str++;
-	if (*str == '-')
-	{
-		sign = -1;
-		str++;
-	}
-	if (*str == '+')
-		str++;
-	while (*str >= '0' && *str <= '9')
-	{
-		res = res * 10 + (*str - '0');
-		str++;
-	}
-	return (res * sign);
-}
-
 long long	get_current_time(void)
 {
 	struct timeval	time;
@@ -57,14 +33,14 @@ long long	get_current_time(void)
 	return (time_ms);
 }
 
-int	check_arg_content(char *arg)
+int	check_arg_content(char *av)
 {
 	int	i;
 
 	i = 0;
-	while (arg[i] != '\0')
+	while (av[i] != '\0')
 	{
-		if (arg[i] < '0' || arg[i] > '9')
+		if (av[i] < '0' || av[i] > '9')
 			return (1);
 		i++;
 	}
@@ -75,16 +51,16 @@ int	valid_param(char **av)
 {
 	if (ft_atoi(av[1]) > 200 || ft_atoi(av[1]) <= 0
 		|| check_arg_content(av[1]) == 1)
-		return (write(2, "Invalid philosophers number\n", 29), 1);
+		return (printf("Invalid philosophers number\n"), 1);
 	if (ft_atoi(av[2]) <= 0 || check_arg_content(av[2]) == 1)
-		return (write(2, "Invalid time to die\n", 21), 1);
+		return (printf("Invalid time to die\n"), 1);
 	if (ft_atoi(av[3]) <= 0 || check_arg_content(av[3]) == 1)
-		return (write(2, "Invalid time to eat\n", 21), 1);
+		return (printf("Invalid time to eat\n"), 1);
 	if (ft_atoi(av[4]) <= 0 || check_arg_content(av[4]) == 1)
-		return (write(2, "Invalid time to sleep\n", 23), 1);
+		return (printf("Invalid time to sleep\n"), 1);
 	if (av[5] && (ft_atoi(av[5]) < 0 || check_arg_content(av[5]) == 1))
-		return (write(2, "Invalid number of times each philosopher must eat\n",
-				51), 1);
+		return (printf("Invalid number of times each philosopher must eat\n"),
+			1);
 	return (0);
 }
 
@@ -112,8 +88,6 @@ int	main(int ac, char **av)
 	init_forks(data->fork, philo_count);
 	init_philo(data, philo, av, start_time);
 	thread_create(data);
-	free(data->fork);
-	free(philo);
-	free(data);
+	free_all(data, philo);
 	return (0);
 }
